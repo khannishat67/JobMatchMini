@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "jobmatch"
+version = "0.1.0"
+description = "A recruitment application backend"
+authors = ["Nishat Khan <khan.nishat67@gmail.com>"]
+license = "MIT"
+package-mode = false
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^4.0"
+djangorestframework = "^3.12"
+djangorestframework-simplejwt = "^5.0"
+psycopg2-binary = "^2.9"  # If using PostgreSQL, adjust as necessary
+# Add other dependencies as needed
+dotenv = "^0.9.9"
+boto3 = "^1.40.39"
+
+[poetry.group.dev.dependencies]
+pytest = "^6.2"
+pytest-django = "^4.5"
+black = "^21.7b0"
+isort = "^5.9"
+# Linting
+flake8 = "^7.0"
