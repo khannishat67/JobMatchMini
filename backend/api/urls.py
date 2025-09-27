@@ -1,8 +1,10 @@
 from django.urls import path
 from .views import (
     UserLoginView, UserRegisterView, CurrentUserView, UpdateCurrentUserView, DeleteCurrentUserView,
-    JobListCreateView, JobRetrieveUpdateDestroyView, ApplyJobView, JobApplicantsListView
+    JobListCreateView, JobRetrieveUpdateDestroyView, ApplyJobView, JobApplicantsListView, UserCVListView, UserCVUploadView,
+JobSearchView
 )
+from api.user.views_user import ChangePasswordView
 from api.user.views_cv import UserCVUploadView
 from django.contrib import admin
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -16,10 +18,14 @@ urlpatterns = [
     path('me/', CurrentUserView.as_view(), name='current-user'),
     path('me/update/', UpdateCurrentUserView.as_view(), name='update-current-user'),
     path('me/delete/', DeleteCurrentUserView.as_view(), name='delete-current-user'),
-        path('me/upload-cv/', UserCVUploadView.as_view(), name='upload-cv'),
+    path('me/change-password/', ChangePasswordView.as_view(), name='change-password'),
+    path('me/cvs/', UserCVListView.as_view(), name='user-cv-list'),
+    path('me/cvs/upload/', UserCVUploadView.as_view(), name='user-cv-upload'),
     # Job APIs
     path('jobs/', JobListCreateView.as_view(), name='job-list-create'),
     path('jobs/<int:pk>/', JobRetrieveUpdateDestroyView.as_view(), name='job-detail'),
     path('jobs/<int:job_id>/apply/', ApplyJobView.as_view(), name='job-apply'),
     path('jobs/<int:job_id>/applicants/', JobApplicantsListView.as_view(), name='job-applicants'),
+    path('jobs/search/', JobSearchView.as_view(), name='job-search'),
+
 ]

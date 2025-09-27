@@ -1,3 +1,6 @@
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status as drf_status
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -71,9 +74,6 @@ class UpdateCurrentUserView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
-from rest_framework import status as drf_status
-from rest_framework.views import APIView
-
 class DeleteCurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -81,3 +81,25 @@ class DeleteCurrentUserView(APIView):
         user = request.user
         user.delete()
         return Response({'detail': 'User deleted successfully.'}, status=drf_status.HTTP_204_NO_CONTENT)
+
+
+# Change Password Serializer
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+# Change Password API View
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        current_password = serializer.validated_data['current_password']
+        new_password = serializer.validated_data['new_password']
+        if not user.check_password(current_password):
+            return Response({'detail': 'Current password is incorrect.'}, status=drf_status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+        return Response({'detail': 'Password updated successfully.'}, status=drf_status.HTTP_200_OK)

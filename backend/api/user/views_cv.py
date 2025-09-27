@@ -27,8 +27,16 @@ class UserCVUploadView(APIView):
         )
         bucket = settings.AWS_STORAGE_BUCKET_NAME
         timestamp = int(time.time())
-        key = f"user_cvs/{request.user.id}/{timestamp}_{quote(file.name)}"
+        key = f"user_cvs/{request.user.id}/{timestamp}"
         s3.upload_fileobj(file, bucket, key, ExtraArgs={'ACL': 'private', 'ContentType': file.content_type})
         file_url = f"https://{bucket}.s3.{settings.AWS_REGION}.amazonaws.com/{key}"
-        user_cv = UserCV.objects.create(user=request.user, file_url=file_url)
+        user_cv = UserCV.objects.create(user=request.user, file_url=file_url, file_name=file.name)
         return Response(UserCVSerializer(user_cv).data, status=status.HTTP_201_CREATED)
+
+class UserCVListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        cvs = UserCV.objects.filter(user=request.user).order_by('-uploaded_at')
+        serializer = UserCVSerializer(cvs, many=True)
+        return Response(serializer.data)

@@ -16,10 +16,14 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-secret-key')
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")  # or your region
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+OPENSEARCH_HOST = os.environ.get("OPENSEARCH_HOST", "localhost")
+OPENSEARCH_PORT = int(os.environ.get("OPENSEARCH_PORT", 9200))
+OPENSEARCH_USER = os.environ.get("OPENSEARCH_USER", None)
+OPENSEARCH_PASS = os.environ.get("OPENSEARCH_PASS", None)
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -114,7 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

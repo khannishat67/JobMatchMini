@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, pagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,11 +7,18 @@ from api.user.models_user import User
 from api.serializers import JobSerializer, JobApplicationSerializer
 from api.permissions import IsAdminUserType, IsUserUserType, IsAdminOrReadOnly
 
-# Job List & Create (Admin can create, all can list)
+
+# Job List & Create (Admin can create, all can list) with pagination
+class JobPagination(pagination.PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class JobListCreateView(generics.ListCreateAPIView):
     queryset = Job.objects.all().order_by('-created_at')
     serializer_class = JobSerializer
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = JobPagination
 
 # Job Retrieve/Update/Delete (Admin only for update/delete)
 class JobRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -35,6 +42,7 @@ class ApplyJobView(APIView):
         if JobApplication.objects.filter(user=user, job=job).exists():
             return Response({'detail': 'You have already applied to this job.'}, status=status.HTTP_400_BAD_REQUEST)
         cv_id = request.data.get('cv_id')
+        note = request.data.get('note', '')
         cv = None
         if cv_id:
             from api.user.models_user import UserCV
@@ -42,7 +50,7 @@ class ApplyJobView(APIView):
                 cv = UserCV.objects.get(id=cv_id, user=user)
             except UserCV.DoesNotExist:
                 return Response({'detail': 'CV not found or does not belong to user.'}, status=status.HTTP_400_BAD_REQUEST)
-        application = JobApplication.objects.create(user=user, job=job, cv=cv)
+        application = JobApplication.objects.create(user=user, job=job, cv=cv, note=note)
         return Response(JobApplicationSerializer(application).data, status=status.HTTP_201_CREATED)
 
 # List applicants for a job (Admin only)

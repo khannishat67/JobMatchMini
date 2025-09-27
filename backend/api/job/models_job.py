@@ -22,6 +22,7 @@ class JobApplication(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     cv = models.ForeignKey(UserCV, on_delete=models.SET_NULL, null=True, blank=True, related_name='applications')
+    note = models.CharField(max_length=500, blank=True, default='')
     applied_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
